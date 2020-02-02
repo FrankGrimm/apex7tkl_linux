@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /home/frank/projects/ssere
+source .venv/bin/activate
+python ssere.py
+#python ssere_attach.py

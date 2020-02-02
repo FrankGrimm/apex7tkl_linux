@@ -1,0 +1,97 @@
+import os
+import sys
+import traceback
+
+import usb.core
+from usb.core import USBError
+import usb.util
+
+os.environ['LIBUSB_DEBUG'] = 'debug'
+
+TARGETS = {"apex7tkl": {"idVendor": 0x1038, "idProduct": 0x1618}}
+
+REPORT_LEN = 642
+SET_COLORS = [0x3a, 0x69]
+
+target_device = None
+for target_name, target in TARGETS.items():
+    print("idVendor %s idProduct %s" % (target['idVendor'], target['idProduct']))
+    dev = usb.core.find(idVendor = target['idVendor'], idProduct = target['idProduct'])
+    if dev is None:
+        continue
+    target['name'] = target_name
+    target_device = target
+    target_device['handle'] = dev
+    break
+
+if target_device is None:
+    print("device not found")
+    sys.exit(1)
+
+print("found target device %s" % ( target_device['name'] ))
+dev = target_device['handle']
+
+was_detached = set()
+for config in dev:
+    for iface in range(config.bNumInterfaces):
+        if dev.is_kernel_driver_active(iface) == True:
+            was_detached.add(iface)
+            print("dev::detach_kernel_driver(%s)" % iface)
+            try:
+                dev.detach_kernel_driver(iface)
+            except USBError as e:
+                print("dev::detach_kernel_driver(%s) failed" % iface, e)
+
+
+try:
+    print("dev::set_configuration")
+    dev.set_configuration()
+except USBError as e:
+    print(e)
+
+#if True:
+#    try:
+#        print("dev::reset")
+#        dev.reset()
+#        #print("dev::set_configuration")
+#        #dev.set_configuration()
+#    except USBError as e:
+#        print(e)
+#
+cfg = dev.get_active_configuration()
+print("config", cfg)
+intf = cfg[(0, 0)]
+
+ep = usb.util.find_descriptor(intf,
+        custom_match = \
+            lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
+
+print("endpoint", ep)
+
+try:
+    print("sending report")
+
+    COLOR_PAYLOAD =
+    report = SET_COLORS + COLOR_PAYLOAD
+    if len(report) < report_len:
+        report = report + [0x00] * (REPORT_LEN - len(report))
+
+    dev.ctrl_transfer(0x21, # request type: REQUEST_TYPE_CLASS | RECIPIENT_INTERFACE | ENDPOINT_OUT
+            0x09, # request: SET_REPORT
+            0x300, # wValue = type Feature, ReportId 0
+            0x01, # wIndex
+            report) # data
+    print("sending report done")
+except USBError as e:
+    print("failed to send report", e)
+    traceback.print_exc()
+except Exception as e1:
+    print("generic error", e1)
+
+
+print("dev::dispose_resources")
+usb.util.dispose_resources(dev)
+if len(was_detached) > 0:
+    for iface in was_detached:
+        print("dev::attach_kernel_driver(%s)" % iface)
+        dev.attach_kernel_driver(iface)
