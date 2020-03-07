@@ -106,6 +106,10 @@ def payload_to_image(payload, filename="payload.png"):
     im.save(filename)
 
 def printimage(payload):
+    for lineidx, line in enumerate(toimage(payload)):
+        print(str(lineidx).rjust(2), line)
+
+def toimage(payload):
     # len(payload) without preamble is 640
     # 640*2*4 = 5120, 5120/40 = 128
     # print("[%s]" % (", ".join(payload)), len(payload))
@@ -117,8 +121,10 @@ def printimage(payload):
         lines.append( payload_bin[0:OLED_WIDTH] )
         payload_bin = payload_bin[OLED_WIDTH:]
 
+    imglines = []
     for lineidx, line in enumerate(lines):
-        print(str(lineidx).rjust(2), line.replace("0", " "))
+        imglines.append( line.replace("0", " "))
+    return imglines
 
 #printimage(full)
 #payload_to_image(full, "payload.png")
