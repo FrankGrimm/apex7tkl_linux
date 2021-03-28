@@ -15,7 +15,7 @@ def get(t):
     if len(t) != 6:
         raise Exception("only RRGGBB format is currently supported")
 
-    r,g,b = t[0:2], t[2:4], t[5:6]
+    r,g,b = t[0:2], t[2:4], t[4:6]
     col = [ int(r, 16), int(g, 16), int(b, 16) ]
     return col
 
