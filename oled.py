@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL import ImageDraw
+from PIL import ImageFont
 
 full = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
 "\xc0\xfc\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" \
@@ -57,9 +58,13 @@ def text_payload(text):
     im = Image.new("1", (OLED_WIDTH, OLED_HEIGHT))
 
     draw = ImageDraw.Draw(im)
-
+    # try:
+    #     # font = ImageFont.truetype("/usr/share/fonts/ibm-plex-mono-fonts/IBMPlexMono-Regular.otf", 11)
+    #     font = ImageFont.truetype("/usr/share/fonts/jetbrains-mono-fonts/JetBrainsMono-Regular.ttf", 11)
+    #     draw.text((1,0), text, (255), font)
+    # except:
+    #     draw.text((1,0), text, fill=(255))
     draw.text((1,0), text, fill=(255))
-
     return _pixels_to_payload(im)
 
 def _pixels_to_payload(im):
