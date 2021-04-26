@@ -30,32 +30,24 @@ def find_device(target_name="apex7tkl"):
     return target, dev
 
 def detach_kernel(dev):
-    was_detached = set()
-    for config in dev:
-        for iface in range(config.bNumInterfaces):
-            if dev.is_kernel_driver_active(iface) == True:
-                was_detached.add(iface)
-                print("dev::detach_kernel_driver(%s)" % iface)
-                try:
-                    dev.detach_kernel_driver(iface)
-                except USBError as e:
-                    print("dev::detach_kernel_driver(%s) failed" % iface, e)
-    return was_detached
+    if dev.is_kernel_driver_active(1) == True:
+        try:
+            print("dev::detach_kernel_driver - interface 1")
+            dev.detach_kernel_driver(1)
+            return True
+        except USBError as e:
+            print("dev::detach_kernel_driver failed" + str(e))
+    return False
 
 def reattach_kernel(dev, was_detached):
     print("dev::dispose_resources")
     usb.util.dispose_resources(dev)
-    if len(was_detached) > 0:
-        for iface in was_detached:
-            print("dev::attach_kernel_driver(%s)" % iface)
-            dev.attach_kernel_driver(iface)
-
-def set_configuration(dev):
-    try:
-        print("dev::set_configuration")
-        dev.set_configuration()
-    except USBError as e:
-        print(e)
+    if was_detached:
+        try:
+            print("dev::artach_kernel_driver - interface 1")
+            dev.attach_kernel_driver(1)
+        except USBError as e:
+            print("dev::attach_kernel_driver failed" + str(e))
 
 class Device():
 
@@ -68,7 +60,6 @@ class Device():
     def __enter__ (self):
         self.target, self.handle = find_device(target_name = self.target_name)
         self._was_detached = detach_kernel(self.handle)
-        set_configuration(self.handle)
         return self
 
     def __exit__ (self, type, value, tb):
