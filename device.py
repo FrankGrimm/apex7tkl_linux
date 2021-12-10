@@ -11,23 +11,21 @@ import oled
 
 DEFAULT_LEN = 642
 
-TARGETS = {"apex7tkl": {"idVendor": 0x1038, "idProduct": 0x1618}}
+TARGETS = [
+    { "name": "apex7", "idVendor": 0x1038, "idProduct": 0x1612 },
+    { "name": "apex7tkl", "idVendor": 0x1038, "idProduct": 0x1618 }
+]
 
-def find_device(target_name="apex7tkl"):
-    target = TARGETS[ target_name ]
+def find_device():
+    """Find the first matching keyboard device in the TARGETS list"""
 
-    print("%s => idVendor %s idProduct %s" % (target_name, target['idVendor'], target['idProduct']))
+    for dev in usb.core.find(find_all=True):
+        for target in TARGETS:
+            if dev.idVendor == target['idVendor'] and dev.idProduct == target['idProduct']:
+                return target, dev
 
-    try:
-        dev = usb.core.find(idVendor = target['idVendor'], idProduct = target['idProduct'])
-    except USBError as e:
-        print("usb::find failed", e)
+    raise Exception("Cannot find a matching device")
 
-    if dev is None:
-        raise Exception("target device %s not found" % target_name)
-
-    target['name'] = target_name
-    return target, dev
 
 def detach_kernel(dev):
     if dev.is_kernel_driver_active(1) == True:
@@ -50,15 +48,13 @@ def reattach_kernel(dev, was_detached):
             print("dev::attach_kernel_driver failed" + str(e))
 
 class Device():
-
-    def __init__ (self, target_name = "apex7tkl"):
-        self.target_name = target_name
+    def __init__ (self):
         self.target = None
         self.handle = None
         self._was_detached = None
 
     def __enter__ (self):
-        self.target, self.handle = find_device(target_name = self.target_name)
+        self.target, self.handle = find_device()
         self._was_detached = detach_kernel(self.handle)
         return self
 
