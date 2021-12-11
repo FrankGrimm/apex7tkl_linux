@@ -19,13 +19,15 @@ TARGETS = [
 def find_device():
     """Find the first matching keyboard device in the TARGETS list"""
 
-    for dev in usb.core.find(find_all=True):
-        for target in TARGETS:
-            if dev.idVendor == target['idVendor'] and dev.idProduct == target['idProduct']:
+    for target in TARGETS:
+        try:
+            dev = usb.core.find(idVendor = target['idVendor'], idProduct = target['idProduct'])
+            if dev is not None:
                 return target, dev
+        except USBError as e:
+            print(f"usb::find({target['name']}) failed: {e}")
 
     raise Exception("Cannot find a matching device")
-
 
 def detach_kernel(dev):
     if dev.is_kernel_driver_active(1) == True:
