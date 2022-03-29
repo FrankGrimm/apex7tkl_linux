@@ -3,6 +3,8 @@ import sys
 from time import sleep
 import traceback
 
+from hardware import cpu, memory, user
+
 os.environ['LIBUSB_DEBUG'] = 'debug'
 import usb.core
 from usb.core import USBError
@@ -111,11 +113,14 @@ class Device():
         self.send(0x300, 0x01, report)
 
     def oled_monitor(self):
+        cpuInfo = cpu()
+        usrInfo = user()
+        memInfo = memory()
         while True:
             data = [
-                "ram: 10G",
-                "swp: 10G",
-                "cpu: 2%",
+                usrInfo.toString(),
+                memInfo.toString(),
+                cpuInfo.toString(),
             ]
             imagedata = oled.text_payload("\n".join(data).strip())
             report = oled.OLED_PREAMBLE + imagedata
