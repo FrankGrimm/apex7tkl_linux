@@ -1,5 +1,6 @@
 import os
 import sys
+from time import sleep
 import traceback
 
 os.environ['LIBUSB_DEBUG'] = 'debug'
@@ -94,8 +95,15 @@ class Device():
 
     def oled_image(self, filename):
         imagedata = oled.image_to_payload(filename)
-        report = oled.OLED_PREAMBLE + imagedata
-        self.send(0x300, 0x01, report)
+        if imagedata is list[int]:
+            report = oled.OLED_PREAMBLE + imagedata
+            self.send(0x300, 0x01, report)
+        else:
+            while True:
+                for it in imagedata:
+                    report = oled.OLED_PREAMBLE + it
+                    sleep(0.1)
+                    self.send(0x300, 0x01, report)
 
     def oled_text(self, text):
         imagedata = oled.text_payload(text)
