@@ -110,6 +110,18 @@ class Device():
         report = oled.OLED_PREAMBLE + imagedata
         self.send(0x300, 0x01, report)
 
+    def oled_monitor(self):
+        while True:
+            data = [
+                "ram: 10G",
+                "swp: 10G",
+                "cpu: 2%",
+            ]
+            imagedata = oled.text_payload("\n".join(data).strip())
+            report = oled.OLED_PREAMBLE + imagedata
+            self.send(0x300, 0x01, report)
+            sleep(1)
+
 #printimage(full)
 #payload_to_image(full, "payload.png")
 #loaded = image_to_payload("payload.png")
