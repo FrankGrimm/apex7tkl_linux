@@ -117,15 +117,19 @@ class Device():
         usrInfo = user()
         memInfo = memory()
         while True:
-            data = [
-                usrInfo.toString(),
-                memInfo.toString(),
-                cpuInfo.toString(),
-            ]
-            imagedata = oled.text_payload("\n".join(data).strip())
-            report = oled.OLED_PREAMBLE + imagedata
-            self.send(0x300, 0x01, report)
-            sleep(1)
+            for _ in range(0, 10):
+                data = [
+                    usrInfo.toString(),
+                    memInfo.toString(),
+                    cpuInfo.toString(),
+                ]
+                imagedata = oled.text_payload("\n".join(data).strip())
+                report = oled.OLED_PREAMBLE + imagedata
+                self.send(0x300, 0x01, report)
+                sleep(1)
+            usrInfo.update()
+            memInfo.update()
+            cpuInfo.update()
 
 #printimage(full)
 #payload_to_image(full, "payload.png")
