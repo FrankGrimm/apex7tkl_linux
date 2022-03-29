@@ -82,7 +82,7 @@ def _pixels_to_payload(im):
 def image_to_payload(filename="payload.png"):
     im = Image.open(filename)
     if im.size[0] != OLED_WIDTH or im.size[1] != OLED_HEIGHT:
-        im.resize( (OLED_WIDTH, OLED_HEIGHT) )
+        im = im.resize( (OLED_WIDTH, OLED_HEIGHT) )
 
     im = im.convert("1")
     return _pixels_to_payload(im)
