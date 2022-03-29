@@ -13,7 +13,8 @@ DEFAULT_LEN = 642
 
 TARGETS = [
     { "name": "apex7", "idVendor": 0x1038, "idProduct": 0x1612 },
-    { "name": "apex7tkl", "idVendor": 0x1038, "idProduct": 0x1618 }
+    { "name": "apex7tkl", "idVendor": 0x1038, "idProduct": 0x1618 },
+    { "name": "apex5", "idVendor": 0x1038, "idProduct": 0x161c },
 ]
 
 def find_device():
