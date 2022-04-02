@@ -2,7 +2,7 @@ import os
 import sys
 from time import sleep
 import traceback
-from cinematic import cinematicManager, cinematicText
+from cinematic import cinematicManager, cinematicScene, cinematicText
 
 from hardware import cpu, memory, user
 
@@ -117,15 +117,27 @@ class Device():
         cpuInfo = cpu()
         usrInfo = user()
         memInfo = memory()
-        mng = cinematicManager()
+        mng = cinematicScene()
+
+        scn1 = cinematicManager()
+        scn2 = cinematicManager()
+        scn3 = cinematicManager()
+
+        scn1.list = [cinematicText("scene1", 21, 42)]
+        scn2.list = [cinematicText("scene2", 21, 42)]
+        scn3.list = [cinematicText("scene3", 21, 42)]
+
+        mng.list = [
+            ## cinematicText(usrInfo.toString(), 21, 42),
+            ## cinematicText(memInfo.toString(), 21, 42),
+            ## cinematicText(cpuInfo.toString(), 21, 42),
+            scn1,
+            scn2,
+            scn3
+        ]
 
         while True:
             print("RESTART")
-            mng.list = [
-                cinematicText(usrInfo.toString(), 21, 42),
-                cinematicText(memInfo.toString(), 21, 42),
-                cinematicText(cpuInfo.toString(), 21, 42),
-            ]
             mng.restart()
             while mng.isEnded() == False:
                 for _ in range(0, 3):

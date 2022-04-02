@@ -42,3 +42,29 @@ class cinematicManager:
         for it in self.list:
             data += [it.display()]
         return "\n".join(data).strip()
+
+class cinematicScene:
+    def __init__(self):
+        self.list = []
+
+    def isEnded(self) -> bool:
+        for it in self.list:
+            if it.isEnded() == False:
+                return False
+        return True
+
+    def restart(self):
+        for it in self.list:
+            it.restart()
+
+    def next(self):
+        for it in self.list:
+            if (it.isEnded() == False):
+                it.next()
+                return
+
+    def display(self) -> str:
+        for it in self.list:
+            if (it.isEnded() == False):
+                return it.display()
+        return self.list[-1].display()
