@@ -1,4 +1,4 @@
-class cinematicText:
+class cinematicTextDynamic:
     def __init__(self, text: str, max: int, c: int):
         self.txt = text
         self.offset = 0
@@ -17,6 +17,56 @@ class cinematicText:
 
     def display(self) -> str:
         return (self.char * self.max + self.txt + self.char * self.max)[self.offset:self.offset + self.max]
+
+class cinematicTextStatic:
+    def __init__(self, text: str, step: int, max: int):
+        self.txt = text
+        self.offset = 0
+        self.step = step
+        self.max = max
+
+    def isEnded(self) -> bool:
+        return self.step == self.offset
+
+    def restart(self):
+        self.offset = 0
+
+    def next(self):
+        if (self.isEnded() == False):
+            self.offset += 1
+
+    def display(self) -> str:
+        return self.txt
+
+class cinematicBlink:
+    def __init__(self, src, iteration: int, step: int, blinkStat: bool):
+        self.src = src
+        self.offset = 0
+        self.step = step
+        self.it = iteration
+        self.blink = blinkStat
+
+    def isEnded(self) -> bool:
+        return self.step * self.it == self.offset
+
+    def restart(self):
+        self.offset = 0
+        self.src.restart()
+
+    def next(self):
+        if (self.isEnded() == False):
+            self.offset += 1
+            self.src.next()
+
+    def display(self) -> str:
+        default = self.src.display()
+        iter = (self.offset - (self.offset % self.it)) / self.it
+        if iter % 2 == 1:
+            if self.blink:
+                return " " * len(default)
+            else:
+                return "#" * len(default)
+        return default
 
 class cinematicManager:
     def __init__(self):
