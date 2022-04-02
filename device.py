@@ -122,17 +122,50 @@ class Device():
         scn1 = cinematicManager()
         scn2 = cinematicManager()
         scn3 = cinematicManager()
+        scn4 = cinematicManager()
+        scn5 = cinematicManager()
 
         ## scn1.list = [cinematicBlink(cinematicText("scene1", 21, 42), 5, 4, True)]
-        scn1.list = [cinematicTextStatic("scene1", 21, 21)]
-        scn2.list = [cinematicTextDynamic("scene2", 21, 42)]
-        scn3.list = [cinematicTextStatic("scene3", 21, 21)]
+        scn1.list = [
+            cinematicTextStatic("Who", 21, 21),
+            cinematicTextDynamic("Host: " + usrInfo.host, 21, 46),
+            cinematicTextDynamic("User: " + usrInfo.name, 21, 46),
+            ]
+        scn2.list = [
+            cinematicTextStatic("Memory", 21, 21),
+            cinematicBlink(cinematicTextStatic("ram", 20, 21), 2, 10, False),
+            cinematicBlink(cinematicTextStatic("swap", 20, 21), 2, 10, False),
+            ]
+        scn3.list = [
+            cinematicTextStatic("Ram", 21, 21)
+            ]
+        scn4.list = [
+            cinematicTextStatic("Swap", 21, 21)
+            ]
+        scn5.list = [
+            cinematicTextStatic("Cpu", 21, 21),
+            cinematicTextStatic("Core: " + str(len(cpuInfo.freq)), 21, 21),
+            cinematicTextDynamic(cpuInfo.name, 21, 46)
+            ]
 
         mng.list = [
             scn1,
             scn2,
-            scn3
+            scn3,
+            scn4,
+            scn5,
         ]
+
+        for idx, it in enumerate(cpuInfo.freq):
+            new = cinematicManager()
+            load = it.load1 * 100 / it.load2
+
+            new.list = [
+                cinematicTextStatic("Core N°" + str(idx), 5, 21),
+                cinematicTextStatic(format(load, ".1f") + "%", 5, 21),
+                cinematicTextStatic("", 5, 21),
+            ]
+            mng.list.append(new)
 
         while True:
             print("RESTART")
