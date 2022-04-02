@@ -2,6 +2,7 @@ import os
 import sys
 from time import sleep
 import traceback
+from cinematic import cinematicManager, cinematicText
 
 from hardware import cpu, memory, user
 
@@ -116,17 +117,29 @@ class Device():
         cpuInfo = cpu()
         usrInfo = user()
         memInfo = memory()
+        mng = cinematicManager()
+
         while True:
-            for _ in range(0, 10):
-                data = [
-                    usrInfo.toString(),
-                    memInfo.toString(),
-                    cpuInfo.toString(),
-                ]
-                imagedata = oled.text_payload("\n".join(data).strip())
-                report = oled.OLED_PREAMBLE + imagedata
-                self.send(0x300, 0x01, report)
-                sleep(1)
+            print("RESTART")
+            mng.list = [
+                cinematicText(usrInfo.toString(), 21, 42),
+                cinematicText(memInfo.toString(), 21, 42),
+                cinematicText(cpuInfo.toString(), 21, 42),
+            ]
+            mng.restart()
+            while mng.isEnded() == False:
+                for _ in range(0, 3):
+                    msg = mng.display()
+                    print("MSG START")
+                    print(msg)
+                    print("MSG END")
+                    imagedata = oled.text_payload(msg)
+                    report = oled.OLED_PREAMBLE + imagedata
+                    self.send(0x300, 0x01, report)
+                    sleep(0.1)
+                print("NEXT")
+                mng.next()
+            print("UPDATE")
             usrInfo.update()
             memInfo.update()
             cpuInfo.update()

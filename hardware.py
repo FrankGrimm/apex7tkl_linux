@@ -136,7 +136,10 @@ class cpu:
         first: list[subCpu] = self.second
         self.second = self.getList()
 
-        self.gloabal = (self.second[0].load1 - first[0].load1) * float(100) / (self.second[0].load2 - first[0].load2)
+        if (self.second[0].load2 - first[0].load2) == 0:
+            self.gloabal = 0
+        else:
+            self.gloabal = (self.second[0].load1 - first[0].load1) * float(100) / (self.second[0].load2 - first[0].load2)
         for i in range(1, len(first)):
             self.freq.append(
                 subCpu(
