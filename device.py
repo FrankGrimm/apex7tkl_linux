@@ -2,7 +2,7 @@ import os
 import sys
 from time import sleep
 import traceback
-from cinematic import cinematicBlink, cinematicManager, cinematicScene, cinematicText, cinematicTextStatic, cinematicTextDynamic
+from cinematic import DefaultHardwareCinematic, cinematicBlink, cinematicManager, cinematicScene, cinematicText, cinematicTextStatic, cinematicTextDynamic
 
 from hardware import cpu, memory, user
 
@@ -117,72 +117,24 @@ class Device():
         cpuInfo = cpu()
         usrInfo = user()
         memInfo = memory()
-        mng = cinematicScene()
-
-        scn1 = cinematicManager()
-        scn2 = cinematicManager()
-        scn3 = cinematicManager()
-        scn4 = cinematicManager()
-        scn5 = cinematicManager()
-
-        ## scn1.list = [cinematicBlink(cinematicText("scene1", 21, 42), 5, 4, True)]
-        scn1.list = [
-            cinematicTextStatic("Who", 21, 21),
-            cinematicTextDynamic("Host: " + usrInfo.host, 21, 46),
-            cinematicTextDynamic("User: " + usrInfo.name, 21, 46),
-            ]
-        scn2.list = [
-            cinematicTextStatic("Memory", 21, 21),
-            cinematicBlink(cinematicTextStatic("ram", 20, 21), 2, 10, False),
-            cinematicBlink(cinematicTextStatic("swap", 20, 21), 2, 10, False),
-            ]
-        scn3.list = [
-            cinematicTextStatic("Ram", 21, 21)
-            ]
-        scn4.list = [
-            cinematicTextStatic("Swap", 21, 21)
-            ]
-        scn5.list = [
-            cinematicTextStatic("Cpu", 21, 21),
-            cinematicTextStatic("Core: " + str(len(cpuInfo.freq)), 21, 21),
-            cinematicTextDynamic(cpuInfo.name, 21, 46)
-            ]
-
-        mng.list = [
-            scn1,
-            scn2,
-            scn3,
-            scn4,
-            scn5,
-        ]
-
-        for idx, it in enumerate(cpuInfo.freq):
-            new = cinematicManager()
-            load = it.load1 * 100 / it.load2
-
-            new.list = [
-                cinematicTextStatic("Core N°" + str(idx), 5, 21),
-                cinematicTextStatic(format(load, ".1f") + "%", 5, 21),
-                cinematicTextStatic("", 5, 21),
-            ]
-            mng.list.append(new)
 
         while True:
-            print("RESTART")
+            ## print("RESTART")
+            mng = DefaultHardwareCinematic(cpuInfo, usrInfo, memInfo)
             mng.restart()
             while mng.isEnded() == False:
                 for _ in range(0, 3):
                     msg = mng.display()
-                    print("MSG START")
-                    print(msg)
-                    print("MSG END")
+                    ## print("MSG START")
+                    ## print(msg)
+                    ## print("MSG END")
                     imagedata = oled.text_payload(msg)
                     report = oled.OLED_PREAMBLE + imagedata
                     self.send(0x300, 0x01, report)
                     sleep(0.1)
-                print("NEXT")
+                ## print("NEXT")
                 mng.next()
-            print("UPDATE")
+            ## print("UPDATE")
             usrInfo.update()
             memInfo.update()
             cpuInfo.update()

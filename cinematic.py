@@ -1,3 +1,7 @@
+from matplotlib import use
+from hardware import cpu, memory, user
+
+
 class cinematicTextDynamic:
     def __init__(self, text: str, max: int, c: int):
         self.txt = text
@@ -139,3 +143,73 @@ class cinematicScene:
             if (it.isEnded() == False):
                 return it.display()
         return self.list[-1].display()
+
+def DefaultHardwareCinematic(cpuInfo: cpu, usrInfo: user, memInfo: memory) -> cinematicScene:
+    mng = cinematicScene()
+    scnSrt = cinematicManager()
+    scnUsr = cinematicManager()
+    scnMem = cinematicManager()
+    scnRam = cinematicManager()
+    scnSwp = cinematicManager()
+    scnCpu = cinematicManager()
+    scnEnd = cinematicManager()
+
+    scnSrt.list = [
+        cinematicTextStatic("Powered", 21, 21),
+        cinematicTextStatic("by", 21, 21),
+        cinematicTextStatic("Sullmin && FrankGrimm", 21, 21),
+        ]
+    scnEnd.list = [
+        cinematicBlink(cinematicTextStatic("", 21, 21), 2, 10, True),
+        cinematicBlink(cinematicTextStatic("Restart Soon", 21, 21), 2, 10, True),
+        cinematicBlink(cinematicTextStatic("", 21, 21), 2, 10, True),
+        ]
+
+    scnUsr.list = [
+        cinematicTextStatic("Who", 21, 21),
+        cinematicTextDynamic("User: " + usrInfo.name, 21, 46),
+        cinematicTextDynamic("Host: " + usrInfo.host, 21, 46),
+        ]
+    scnMem.list = [
+        cinematicTextStatic("Memory", 21, 21),
+        cinematicTextStatic("Ram " + format((memInfo.ram.total - memInfo.ram.free) * 100 / memInfo.ram.total, ".1f") + "%", 20, 21),
+        cinematicTextStatic("Swap " + format((memInfo.swap.total - memInfo.swap.free) * 100 / memInfo.swap.total, ".1f") + "%", 20, 21),
+        ]
+    scnRam.list = [
+        cinematicTextStatic("Ram", 21, 21),
+        cinematicTextStatic("Used: " + format(memInfo.ram.total - memInfo.ram.free, ".1f") + "G", 21, 21),
+        cinematicTextStatic("Total: " + format(memInfo.ram.total, ".1f") + "G", 21, 21),
+        ]
+    scnSwp.list = [
+        cinematicTextStatic("Swap", 21, 21),
+        cinematicTextStatic("Used: " + format(memInfo.swap.total - memInfo.swap.free, ".1f") + "G", 21, 21),
+        cinematicTextStatic("Total: " + format(memInfo.swap.total, ".1f") + "G", 21, 21),
+        ]
+    scnCpu.list = [
+        cinematicTextStatic("Cpu", 21, 21),
+        cinematicTextStatic("Core: " + str(len(cpuInfo.freq)), 21, 21),
+        cinematicTextDynamic(cpuInfo.name, 21, 46)
+        ]
+
+    mng.list = [
+        scnSrt,
+        scnUsr,
+        scnMem,
+        scnRam,
+        scnSwp,
+        scnCpu,
+    ]
+
+    for idx, it in enumerate(cpuInfo.freq):
+        new = cinematicManager()
+        load = it.load1 * 100 / it.load2
+
+        new.list = [
+            cinematicTextStatic("Core N°" + str(idx), 5, 21),
+            cinematicTextStatic(format(load, ".1f") + "%", 5, 21),
+            cinematicTextStatic("", 5, 21),
+        ]
+        mng.list.append(new)
+
+    mng.list.append(scnEnd)
+    return mng
