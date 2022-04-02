@@ -36,6 +36,27 @@ class cinematicTextStatic:
             self.offset += 1
 
     def display(self) -> str:
+        txt = ("." * self.max + self.txt + "." * self.max)
+        pos = int(float(len(txt) / 2) - float(self.max / 2))
+        return txt[pos:pos + self.max]
+
+class cinematicText:
+    def __init__(self, text: str, step: int):
+        self.txt = text
+        self.offset = 0
+        self.step = step
+
+    def isEnded(self) -> bool:
+        return self.step == self.offset
+
+    def restart(self):
+        self.offset = 0
+
+    def next(self):
+        if (self.isEnded() == False):
+            self.offset += 1
+
+    def display(self) -> str:
         return self.txt
 
 class cinematicBlink:

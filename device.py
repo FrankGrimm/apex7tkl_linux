@@ -2,7 +2,7 @@ import os
 import sys
 from time import sleep
 import traceback
-from cinematic import cinematicBlink, cinematicManager, cinematicScene, cinematicTextStatic, cinematicTextDynamic
+from cinematic import cinematicBlink, cinematicManager, cinematicScene, cinematicText, cinematicTextStatic, cinematicTextDynamic
 
 from hardware import cpu, memory, user
 
@@ -123,9 +123,10 @@ class Device():
         scn2 = cinematicManager()
         scn3 = cinematicManager()
 
-        scn1.list = [cinematicBlink(cinematicTextStatic("scene1", 21, 42), 5, 4, True)]
+        ## scn1.list = [cinematicBlink(cinematicText("scene1", 21, 42), 5, 4, True)]
+        scn1.list = [cinematicTextStatic("scene1", 21, 21)]
         scn2.list = [cinematicTextDynamic("scene2", 21, 42)]
-        scn3.list = [cinematicTextStatic("scene3", 21, 42)]
+        scn3.list = [cinematicTextStatic("scene3", 21, 21)]
 
         mng.list = [
             scn1,
