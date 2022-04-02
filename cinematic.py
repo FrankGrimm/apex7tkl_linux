@@ -157,7 +157,7 @@ def DefaultHardwareCinematic(cpuInfo: cpu, usrInfo: user, memInfo: memory) -> ci
     scnSrt.list = [
         cinematicTextStatic("Powered", 21, 21),
         cinematicTextStatic("by", 21, 21),
-        cinematicTextStatic("Sullmin && FrankGrimm", 21, 21),
+        cinematicTextStatic("FrankGrimm & Others", 21, 21),
         ]
     scnEnd.list = [
         cinematicBlink(cinematicTextStatic("", 21, 21), 2, 10, True),
@@ -187,10 +187,9 @@ def DefaultHardwareCinematic(cpuInfo: cpu, usrInfo: user, memInfo: memory) -> ci
         ]
     scnCpu.list = [
         cinematicTextStatic("Cpu", 21, 21),
-        cinematicTextStatic("Core: " + str(len(cpuInfo.freq)), 21, 21),
+        cinematicTextStatic(str(len(cpuInfo.freq)) + " core at " + format(cpuInfo.gloabal, ".1f") + "%", 21, 21),
         cinematicTextDynamic(cpuInfo.name, 21, 46)
         ]
-
     mng.list = [
         scnSrt,
         scnUsr,
