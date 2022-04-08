@@ -1,6 +1,10 @@
 import os
 import sys
+from time import sleep
 import traceback
+from cinematic import DefaultHardwareCinematic, cinematicBlink, cinematicManager, cinematicScene, cinematicText, cinematicTextStatic, cinematicTextDynamic
+
+from hardware import cpu, memory, user
 
 os.environ['LIBUSB_DEBUG'] = 'debug'
 import usb.core
@@ -13,7 +17,8 @@ DEFAULT_LEN = 642
 
 TARGETS = [
     { "name": "apex7", "idVendor": 0x1038, "idProduct": 0x1612 },
-    { "name": "apex7tkl", "idVendor": 0x1038, "idProduct": 0x1618 }
+    { "name": "apex7tkl", "idVendor": 0x1038, "idProduct": 0x1618 },
+    { "name": "apex5", "idVendor": 0x1038, "idProduct": 0x161c },
 ]
 
 def find_device():
@@ -93,13 +98,46 @@ class Device():
 
     def oled_image(self, filename):
         imagedata = oled.image_to_payload(filename)
-        report = oled.OLED_PREAMBLE + imagedata
-        self.send(0x300, 0x01, report)
+        if imagedata is list[int]:
+            report = oled.OLED_PREAMBLE + imagedata
+            self.send(0x300, 0x01, report)
+        else:
+            while True:
+                for it in imagedata:
+                    report = oled.OLED_PREAMBLE + it
+                    sleep(0.1)
+                    self.send(0x300, 0x01, report)
 
     def oled_text(self, text):
         imagedata = oled.text_payload(text)
         report = oled.OLED_PREAMBLE + imagedata
         self.send(0x300, 0x01, report)
+
+    def oled_monitor(self):
+        cpuInfo = cpu()
+        usrInfo = user()
+        memInfo = memory()
+
+        while True:
+            ## print("RESTART")
+            mng = DefaultHardwareCinematic(cpuInfo, usrInfo, memInfo)
+            mng.restart()
+            while mng.isEnded() == False:
+                for _ in range(0, 3):
+                    msg = mng.display()
+                    ## print("MSG START")
+                    ## print(msg)
+                    ## print("MSG END")
+                    imagedata = oled.text_payload(msg)
+                    report = oled.OLED_PREAMBLE + imagedata
+                    self.send(0x300, 0x01, report)
+                    sleep(0.1)
+                ## print("NEXT")
+                mng.next()
+            ## print("UPDATE")
+            usrInfo.update()
+            memInfo.update()
+            cpuInfo.update()
 
 #printimage(full)
 #payload_to_image(full, "payload.png")

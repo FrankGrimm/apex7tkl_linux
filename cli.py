@@ -25,6 +25,10 @@ def oled_text(*args):
     with device.Device() as dev:
         dev.oled_text(text)
 
+def oled_monitor():
+    with device.Device() as dev:
+        dev.oled_monitor()
+
 def set_colors(*colordef):
     l = list(colordef)
 
@@ -60,6 +64,7 @@ COMMANDS = {
         "oled": {"minargs": 1, "handler": oled_update},
         "oledblank": {"minargs": 0, "handler": oled_blank},
         "oledtext": {"minargs": 1, "handler": oled_text},
+        "oledmonitor": {"minargs": 0, "handler": oled_monitor},
         "color": {"minargs": 2, "handler": set_colors}
         }
 
